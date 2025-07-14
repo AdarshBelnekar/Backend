@@ -1,0 +1,27 @@
+services:
+  kpa_postgres:
+    image: postgres:14
+    container_name: kpa_postgres
+    environment:
+      POSTGRES_DB: kpa_db
+      POSTGRES_USER: kpa_user
+      POSTGRES_PASSWORD: kpa_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  kpa_fastapi:
+    build: .
+    container_name: kpa_fastapi
+    ports:
+      - "8000:8000"
+    depends_on:
+      - kpa_postgres
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgresql://kpa_user:kpa_pass@kpa_postgres:5432/kpa_db
+
+volumes:
+  postgres_data:
